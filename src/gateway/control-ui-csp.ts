@@ -34,3 +34,4 @@ export function buildControlUiCspHeader(frameAncestors?: string[]): string {
     "connect-src 'self' ws: wss:",
   ].join("; ");
 }
+
