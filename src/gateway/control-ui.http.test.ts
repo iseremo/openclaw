@@ -52,6 +52,34 @@ describe("handleControlUiHttpRequest", () => {
     });
   });
 
+  it("omits X-Frame-Options when OPENCLAW_FRAME_ANCESTORS is set", async () => {
+    const original = process.env.OPENCLAW_FRAME_ANCESTORS;
+    process.env.OPENCLAW_FRAME_ANCESTORS = "'self' https://agentivo.com";
+    try {
+      await withControlUiRoot({
+        fn: async (tmp) => {
+          const { res, setHeader } = makeMockHttpResponse();
+          handleControlUiHttpRequest(
+            { url: "/", method: "GET" } as IncomingMessage,
+            res,
+            {
+              root: { kind: "resolved", path: tmp },
+            },
+          );
+          expect(setHeader).not.toHaveBeenCalledWith("X-Frame-Options", "DENY");
+          const csp = setHeader.mock.calls.find((call) => call[0] === "Content-Security-Policy")?.[1];
+          expect(String(csp)).toContain("frame-ancestors 'self' https://agentivo.com");
+        },
+      });
+    } finally {
+      if (original === undefined) {
+        delete process.env.OPENCLAW_FRAME_ANCESTORS;
+      } else {
+        process.env.OPENCLAW_FRAME_ANCESTORS = original;
+      }
+    }
+  });
+
   it("does not inject inline scripts into index.html", async () => {
     const html = "<html><head></head><body>Hello</body></html>\n";
     await withControlUiRoot({

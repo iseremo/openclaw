@@ -72,8 +72,14 @@ type ControlUiAvatarMeta = {
 };
 
 function applyControlUiSecurityHeaders(res: ServerResponse) {
-  res.setHeader("X-Frame-Options", "DENY");
-  res.setHeader("Content-Security-Policy", buildControlUiCspHeader());
+  const csp = buildControlUiCspHeader();
+  // Only set X-Frame-Options: DENY when frame-ancestors is 'none'.
+  // When a custom frame-ancestors is configured (via env var or param),
+  // the CSP directive alone is sufficient and more flexible.
+  if (!process.env.OPENCLAW_FRAME_ANCESTORS?.trim()) {
+    res.setHeader("X-Frame-Options", "DENY");
+  }
+  res.setHeader("Content-Security-Policy", csp);
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("Referrer-Policy", "no-referrer");
 }
