@@ -98,6 +98,7 @@ COPY --from=builder --chown=node:node /app/dist ./dist
 COPY --from=builder --chown=node:node /app/ui ./ui
 COPY --from=builder --chown=node:node /app/node_modules ./node_modules
 COPY --from=builder --chown=node:node /app/patches ./patches
+COPY --from=builder --chown=node:node /app/docs/reference/templates ./docs/reference/templates
 
 ENV NODE_ENV=production
 ENV OPENCLAW_PREFER_PNPM=1
