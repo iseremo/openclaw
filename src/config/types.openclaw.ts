@@ -82,6 +82,13 @@ export type OpenClawConfig = {
   ui?: {
     /** Accent color for OpenClaw UI chrome (hex). */
     seamColor?: string;
+    /** White-label brand overrides for the dashboard header. */
+    brand?: {
+      /** Dashboard title (default: "OPENCLAW"). */
+      title?: string;
+      /** Dashboard subtitle (default: "Gateway Dashboard"). */
+      subtitle?: string;
+    };
     assistant?: {
       /** Assistant display name for UI surfaces. */
       name?: string;

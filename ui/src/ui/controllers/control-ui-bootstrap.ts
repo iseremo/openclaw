@@ -10,6 +10,8 @@ export type ControlUiBootstrapState = {
   assistantName: string;
   assistantAvatar: string | null;
   assistantAgentId: string | null;
+  brandTitle: string;
+  brandSubtitle: string;
 };
 
 export async function loadControlUiBootstrapConfig(state: ControlUiBootstrapState) {
@@ -43,6 +45,12 @@ export async function loadControlUiBootstrapConfig(state: ControlUiBootstrapStat
     state.assistantName = normalized.name;
     state.assistantAvatar = normalized.avatar;
     state.assistantAgentId = normalized.agentId ?? null;
+    if (parsed.brandTitle) {
+      state.brandTitle = parsed.brandTitle;
+    }
+    if (parsed.brandSubtitle) {
+      state.brandSubtitle = parsed.brandSubtitle;
+    }
   } catch {
     // Ignore bootstrap failures; UI will update identity after connecting.
   }

@@ -60,6 +60,8 @@ export type AppViewState = {
   assistantName: string;
   assistantAvatar: string | null;
   assistantAgentId: string | null;
+  brandTitle: string;
+  brandSubtitle: string;
   sessionKey: string;
   chatLoading: boolean;
   chatSending: boolean;

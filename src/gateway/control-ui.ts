@@ -340,6 +340,8 @@ export function handleControlUiHttpRequest(
       assistantName: identity.name,
       assistantAvatar: avatarValue ?? identity.avatar,
       assistantAgentId: identity.agentId,
+      brandTitle: config?.ui?.brand?.title,
+      brandSubtitle: config?.ui?.brand?.subtitle,
     } satisfies ControlUiBootstrapConfig);
     return true;
   }
