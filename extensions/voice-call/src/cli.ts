@@ -62,8 +62,14 @@ function summarizeSeries(values: number[]): {
     return { count: 0, minMs: 0, maxMs: 0, avgMs: 0, p50Ms: 0, p95Ms: 0 };
   }
 
-  const minMs = values.reduce((min, value) => (value < min ? value : min), Number.POSITIVE_INFINITY);
-  const maxMs = values.reduce((max, value) => (value > max ? value : max), Number.NEGATIVE_INFINITY);
+  const minMs = values.reduce(
+    (min, value) => (value < min ? value : min),
+    Number.POSITIVE_INFINITY,
+  );
+  const maxMs = values.reduce(
+    (max, value) => (value > max ? value : max),
+    Number.NEGATIVE_INFINITY,
+  );
   const avgMs = values.reduce((sum, value) => sum + value, 0) / values.length;
   return {
     count: values.length,
@@ -73,6 +79,27 @@ function summarizeSeries(values: number[]): {
     p50Ms: percentile(values, 50),
     p95Ms: percentile(values, 95),
   };
+}
+
+function resolveCallMode(mode?: string): "notify" | "conversation" | undefined {
+  return mode === "notify" || mode === "conversation" ? mode : undefined;
+}
+
+async function initiateCallAndPrintId(params: {
+  runtime: VoiceCallRuntime;
+  to: string;
+  message?: string;
+  mode?: string;
+}) {
+  const result = await params.runtime.manager.initiateCall(params.to, undefined, {
+    message: params.message,
+    mode: resolveCallMode(params.mode),
+  });
+  if (!result.success) {
+    throw new Error(result.error || "initiate failed");
+  }
+  // eslint-disable-next-line no-console
+  console.log(JSON.stringify({ callId: result.callId }, null, 2));
 }
 
 export function registerVoiceCallCli(params: {
@@ -106,16 +133,12 @@ export function registerVoiceCallCli(params: {
       if (!to) {
         throw new Error("Missing --to and no toNumber configured");
       }
-      const result = await rt.manager.initiateCall(to, undefined, {
+      await initiateCallAndPrintId({
+        runtime: rt,
+        to,
         message: options.message,
-        mode:
-          options.mode === "notify" || options.mode === "conversation" ? options.mode : undefined,
+        mode: options.mode,
       });
-      if (!result.success) {
-        throw new Error(result.error || "initiate failed");
-      }
-      // eslint-disable-next-line no-console
-      console.log(JSON.stringify({ callId: result.callId }, null, 2));
     });
 
   root
@@ -130,16 +153,12 @@ export function registerVoiceCallCli(params: {
     )
     .action(async (options: { to: string; message?: string; mode?: string }) => {
       const rt = await ensureRuntime();
-      const result = await rt.manager.initiateCall(options.to, undefined, {
+      await initiateCallAndPrintId({
+        runtime: rt,
+        to: options.to,
         message: options.message,
-        mode:
-          options.mode === "notify" || options.mode === "conversation" ? options.mode : undefined,
+        mode: options.mode,
       });
-      if (!result.success) {
-        throw new Error(result.error || "initiate failed");
-      }
-      // eslint-disable-next-line no-console
-      console.log(JSON.stringify({ callId: result.callId }, null, 2));
     });
 
   root
