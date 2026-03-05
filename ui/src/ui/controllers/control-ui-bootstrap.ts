@@ -12,6 +12,7 @@ export type ControlUiBootstrapState = {
   assistantAgentId: string | null;
   brandTitle: string;
   brandSubtitle: string;
+  serverVersion: string | null;
 };
 
 export async function loadControlUiBootstrapConfig(state: ControlUiBootstrapState) {
@@ -51,6 +52,7 @@ export async function loadControlUiBootstrapConfig(state: ControlUiBootstrapStat
     if (parsed.brandSubtitle) {
       state.brandSubtitle = parsed.brandSubtitle;
     }
+    state.serverVersion = parsed.serverVersion ?? null;
   } catch {
     // Ignore bootstrap failures; UI will update identity after connecting.
   }
